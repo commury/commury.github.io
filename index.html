@@ -1,9 +1,64 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <title>my website</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VND to USD Converter</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #0f172a;
+            color: #ffffff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .card {
+            background-color: #1e293b;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+            text-align: center;
+            width: 300px;
+        }
+        input {
+            width: 100%;
+            padding: 10px;
+            margin: 15px 0;
+            background-color: #0f172a;
+            border: 1px solid #475569;
+            color: white;
+            border-radius: 6px;
+            box-sizing: border-box;
+        }
+        #result {
+            font-size: 1.2rem;
+            color: #38bdf8;
+            margin-top: 15px;
+        }
+    </style>
 </head>
 <body>
-  <p>hi</p>
+
+    <div class="card">
+        <h2>Dong to USD</h2>
+        <p>Enter amount in VND:</p>
+        <input type="number" id="vndInput" placeholder="e.g. 218000" oninput="convertCurrency()">
+        <div id="result">$0.00 USD</div>
+    </div>
+
+    <script>
+        function convertCurrency() {
+            let vnd = document.getElementById("vndInput").value;
+            // Using the exchange rate we calculated earlier (~0.000038)
+            let rate = 0.000038;
+            let usd = vnd * rate;
+            
+            document.getElementById("result").innerText = "$" + usd.toFixed(2) + " USD";
+        }
+    </script>
+
 </body>
 </html>
