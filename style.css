@@ -1,0 +1,46 @@
+body {
+    background: linear-gradient(135deg, #d6eaff, #3070b4);
+}
+
+#pagetitleheader {
+    text-align: center;
+
+    font-size: 100px;
+}
+#clicker {
+    background-color: #8b8b8b;
+    border: 5px solid black;
+
+    display: block;
+    margin: 0 auto;
+
+    padding-left: 50px;
+    padding-right: 50px;
+
+    font-size: 32px;
+}
+#clicker:active {
+  transform: scale(0.9);
+}
+#counter {
+    margin: 0;
+    text-align: center;
+
+    background-color: #8b8b8b;
+
+    font-size: 25px;
+}
+p {
+    overflow-wrap: break-word;
+}
+
+.container {
+  width: 800px;
+  height: 1000px;
+  margin: 0 auto;
+  
+  background-color: #ffffff;
+  
+  margin-top: 100px;
+  padding-top: 50px;
+}

@@ -2,23 +2,26 @@
 <html lang="en">
 <head>
     <title>website</title>
+	<link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <p>hiy</p>
-	<h1>my clicker</h1>
-	<button id="click">click</button>
-	<br>
-	<p id="counter">0</p>
+	<h1 id="pagetitleheader">My Clicker</h1>
+	<div class="container">
+		<button id="clicker">click</button>
+		<br>
+		<p id="counter">clicks: </p>
+		<p id="yippyyap">myclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclicker</p>
+	</div>
 	
 	<script>
-	let count = 0;
-	
-	let click = document.getElementById("click");
-	let counter = document.getElementById("counter");
-	click.onclick = function () {
-		count++;
-		counter.textContent = count;
-	}
+		let count = 0;
+		
+		let button = document.getElementById("clicker");
+		let counter = document.getElementById("counter");
+		button.addEventListener('mousedown', (event) => {
+			count++;
+			counter.textContent = "clicks: " + count;
+		})
 	</script>
 </body>
 </html>
