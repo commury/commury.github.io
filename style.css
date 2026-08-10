@@ -21,6 +21,8 @@ body {
     padding-right: 50px;
 
     font-size: 32px;
+
+    cursor: pointer;
 }
 #clicker:active {
   transform: scale(0.9);
