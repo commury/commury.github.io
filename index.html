@@ -18,24 +18,30 @@
 	<script>
 		const socket = io('https://commurygithubiobackend.onrender.com');
 
+		let button = document.getElementById("clicker");
+		let counter = document.getElementById("counter");
+
 		let statusserver = document.getElementById("serverstatus");
 		socket.on('connect', () => {
 			statusserver.textContent = "online";
+			button.disabled = false;
 		});
 		socket.on('disconnect', () => {
 			statusserver.textContent = "offline, reconnecting...";
+			button.disabled = true;
 		});
 		socket.on('connect_error', () => {
 			statusserver.textContent = "offline";
+			button.disabled = true;
 		});
 		
-		let button = document.getElementById("clicker");
-		let counter = document.getElementById("counter");
 		socket.on('servercount', (ncount) => {
 			counter.textContent = "clicks: " + ncount;
 		});
 		button.addEventListener('mousedown', () => {
-			socket.emit('click');
+			if (!button.disabled) {
+		        socket.emit('click');
+		    }
 		});
 	</script>
 </body>
