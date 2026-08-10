@@ -7,6 +7,9 @@ body {
 
     font-size: 100px;
 }
+#serverstatus {
+    text-align: center;
+}
 #clicker {
     background-color: #8b8b8b;
     border: 5px solid black;

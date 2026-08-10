@@ -6,22 +6,37 @@
 </head>
 <body>
 	<h1 id="pagetitleheader">My Clicker</h1>
+	<p id="serverstatus">NaN</p>
 	<div class="container">
 		<button id="clicker">click</button>
 		<br>
 		<p id="counter">clicks: </p>
 		<p id="yippyyap">myclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclicker</p>
 	</div>
-	
+
+	<script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
 	<script>
-		let count = 0;
+		const socket = io('http://localhost:3000');
+
+		let statusserver = document.getElementById("serverstatus");
+		socket.on('connect', () => {
+			statusserver.textContent = "online";
+		});
+		socket.on('disconnect', () => {
+			statusserver.textContent = "offline, reconnecting...";
+		});
+		socket.on('connect_error', () => {
+			statusserver.textContent = "offline";
+		});
 		
 		let button = document.getElementById("clicker");
 		let counter = document.getElementById("counter");
-		button.addEventListener('mousedown', (event) => {
-			count++;
-			counter.textContent = "clicks: " + count;
-		})
+		socket.on('servercount', (ncount) => {
+			counter.textContent = "clicks: " + ncount;
+		});
+		button.addEventListener('mousedown', () => {
+			socket.emit('click');
+		});
 	</script>
 </body>
 </html>
