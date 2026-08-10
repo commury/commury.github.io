@@ -24,8 +24,12 @@ body {
 
     cursor: pointer;
 }
-#clicker:active {
+#clicker:not(:disabled):active {
   transform: scale(0.9);
+}
+#clicker:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
 }
 #counter {
     margin: 0;
