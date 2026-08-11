@@ -6,11 +6,30 @@
 </head>
 <body>
 	<h1 id="pagetitleheader">My Clicker</h1>
-	<p id="serverstatus">NaN</p>
-	<div class="container">
-		<button id="clicker">click</button>
+	<p id="serverstatus" data-status="NaN">NaN</p>
+	<button class="generic" id="account">create an account!</button>
+	<div class="query" id="createaccount" hidden>
+		<label for="username" class="query">Username:</label>
+		<p class="queryerror" id="usernameerror" hidden>Username must not be empty!</p>
+		<input type="text" id="username" class="query">
+
+		<label for="password" class="query">New password:</label>
+		<p class="queryerror" id="passworderror" hidden>Password must not be empty!</p>
+		<input type="text" id="password" class="query">
+
+		<p class="queryerror" id="registererror" hidden></p>
+		<button class="query" id="register">Create</button>
+	</div>
+	<div class="board" id="account" hidden>
+		<h1 class="board" id="username">Username</h1>
+		<button class="clicker" id="local">click</button>
 		<br>
-		<p id="counter">clicks: </p>
+		<p class="counter" id="local">clicks: </p>
+	</div>
+	<div class="container">
+		<button class="clicker" id="global">click</button>
+		<br>
+		<p class="counter" id="global">clicks: </p>
 		<p id="yippyyap">myclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclicker</p>
 	</div>
 
@@ -18,21 +37,33 @@
 	<script>
 		const socket = io('https://commurygithubiobackend.onrender.com');
 
-		let button = document.getElementById("clicker");
-		let counter = document.getElementById("counter");
+		let button = document.querySelector("button.clicker#global");
+		let counter = document.querySelector("p.counter#global");
+
+		let accountbutton = document.querySelector("button#account");
+		let accountquery = document.querySelector("div.query#createaccount");
+		let usernameinput = document.getElementById("username");
+		let passwordinput = document.getElementById("password");
+		let registerbutton = document.getElementById("register");
 
 		let statusserver = document.getElementById("serverstatus");
 		socket.on('connect', () => {
 			statusserver.textContent = "online";
+			statusserver.dataset.status = "online"
 			button.disabled = false;
+			registerbutton.disabled = false;
 		});
 		socket.on('disconnect', () => {
 			statusserver.textContent = "offline, reconnecting...";
+			statusserver.dataset.status = "offline"
 			button.disabled = true;
+			registerbutton.disabled = true;
 		});
 		socket.on('connect_error', () => {
 			statusserver.textContent = "offline";
+			statusserver.dataset.status = "offline"
 			button.disabled = true;
+			registerbutton.disabled = true;
 		});
 		
 		socket.on('servercount', (ncount) => {
@@ -42,6 +73,59 @@
 			if (!button.disabled) {
 		        socket.emit('click');
 		    }
+		});
+	</script>
+	<script>
+		let state = {
+			username: null,
+			session: null
+		};
+
+		function accountset(username, session) {
+			state.username = username;
+			state.session = session;
+
+			accountquery.hidden = true;
+			accountbutton.textContent = state.username;
+			accountquery = document.querySelector("div.board#account");
+
+			accountquery.querySelector("h1.board#username").textContent = state.username;
+			socket.emit('accountclicks', state);
+		}
+		accountbutton.addEventListener('mousedown', () => {
+			accountquery.hidden = !accountquery.hidden;
+		});
+		registerbutton.addEventListener('mousedown', async () => {
+			let allowed = true;
+			accountquery.querySelector("#usernameerror").hidden = true;
+			accountquery.querySelector("#passworderror").hidden = true;
+			accountquery.querySelector("#registererror").hidden = true;
+			if (!usernameinput.value.trim()) {
+				accountquery.querySelector("#usernameerror").hidden = false;
+				allowed = false;
+			}
+			if (!passwordinput.value.trim()) {
+				accountquery.querySelector("#passworderror").hidden = false;
+				allowed = false;
+			}
+			if (!allowed) {
+				return;
+			}
+			registerbutton.disabled = true;
+			socket.emit('createaccount', {
+				username: usernameinput.value,
+				password: passwordinput.value
+			});
+			socket.on('accountcreated', (response) => {
+				if (response.success) {
+					registerbutton.disabled = false;
+					accountset(usernameinput.value, response.session);
+				} else {
+					accountquery.querySelector("#registererror").hidden = false;
+					accountquery.querySelector("#registererror").textContent = response.message;
+					registerbutton.disabled = false;
+				}
+			})
 		});
 	</script>
 </body>

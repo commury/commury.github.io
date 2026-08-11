@@ -10,34 +10,14 @@ body {
 #serverstatus {
     text-align: center;
 }
-#clicker {
-    background-color: #8b8b8b;
-    border: 5px solid black;
-
-    display: block;
-    margin: 0 auto;
-
-    padding-left: 50px;
-    padding-right: 50px;
-
-    font-size: 32px;
-
-    cursor: pointer;
+p[data-status="NaN"] {
+    background-color: #808080;
 }
-#clicker:not(:disabled):active {
-  transform: scale(0.9);
+p[data-status="online"] {
+    background-color: #00ff00;
 }
-#clicker:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-}
-#counter {
-    margin: 0;
-    text-align: center;
-
-    background-color: #8b8b8b;
-
-    font-size: 25px;
+p[data-status="offline"] {
+    background-color: #ff0000;
 }
 p {
     overflow-wrap: break-word;
@@ -48,8 +28,135 @@ p {
   height: 1000px;
   margin: 0 auto;
   
-  background-color: #ffffff;
+  background-color: #ffffffff;
   
-  margin-top: 100px;
-  padding-top: 50px;
+  margin-top: 30px;
+  padding-top: 20px;
+}
+
+button.generic {
+    padding: 5px;
+    border-radius: 0;
+
+    font-size: 20px;
+
+    cursor: pointer;
+}
+button.generic:not(:disabled):hover {
+    filter: brightness(0.85);
+}
+button.generic:not(:disabled):active {
+    transform: scale(0.9);
+}
+button.generic:disabled {
+    opacity: 0.75;
+    cursor: not-allowed;
+}
+div.query {
+    width: 100%;
+    max-width: 400px;
+    height: 400px;
+    margin: 0 auto;
+
+    margin-top: 20px;
+    padding-top: 10px;
+
+    background-color: #ffffff80;
+}
+label.query,input.query {
+  display: block;
+  width: 75%;
+  box-sizing: border-box;
+
+  margin: 0 auto;
+}
+label.query {
+    font-size: 20px;
+    
+    margin-top: 25px;
+}
+input.query {
+    padding: 10px;
+}
+button.query {
+    display: block;
+    margin: 0 auto;
+    border-radius: 0;
+
+    margin-top: 60px;
+
+    font-size: 40px;
+    cursor: pointer;
+}
+button.query:not(:disabled):hover {
+    filter: brightness(0.85);
+}
+button.query:not(:disabled):active {
+    transform: scale(0.9);
+}
+button.query:disabled {
+    opacity: 0.75;
+    cursor: not-allowed;
+}
+.queryerror {
+    width: 75%;
+    box-sizing: border-box;
+
+    margin: 0 auto;
+    margin-top: 0;
+
+    color: #ff0000;
+}
+div.board {
+    width: 100%;
+    max-width: 600px;
+    height: 600px;
+    margin: 0 auto;
+
+    margin-top: 20px;
+    padding-top: 10px;
+
+    background-color: #ffffffc0;
+}
+button.clicker {
+    border: 5px solid black;
+
+    display: block;
+    margin: 0 auto;
+
+    padding-left: 50px;
+    padding-right: 50px;
+
+    cursor: pointer;
+}
+button.clicker:not(:disabled):active {
+    transform: scale(0.9);
+}
+button.clicker:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+button.clicker#global {
+    background-color: #8b8b8b;
+    font-size: 32px;
+}
+button.clicker#local {
+    background-color: #c0c0c0;
+    font-size: 24px;
+}
+p.counter {
+    margin: 0;
+    text-align: center;
+
+    background-color: #8b8b8b;
+}
+p.counter#global {
+    font-size: 25px;
+}
+p.counter#local {
+    font-size: 25px;
+}
+h1.board#username {
+    text-align: center;
+    font-size: 40px;
 }
