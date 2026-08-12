@@ -10,13 +10,13 @@ body {
 #serverstatus {
     text-align: center;
 }
-p[data-status="NaN"] {
+#serverstatus[data-status="NaN"] {
     background-color: #808080;
 }
-p[data-status="online"] {
+#serverstatus[data-status="online"] {
     background-color: #00ff00;
 }
-p[data-status="offline"] {
+#serverstatus[data-status="offline"] {
     background-color: #ff0000;
 }
 p {
@@ -78,14 +78,15 @@ label.query {
 input.query {
     padding: 10px;
 }
+input.query#password {
+    margin-bottom: 60px;
+}
 button.query {
     display: block;
     margin: 0 auto;
     border-radius: 0;
 
-    margin-top: 60px;
-
-    font-size: 40px;
+    font-size: 20px;
     cursor: pointer;
 }
 button.query:not(:disabled):hover {
@@ -97,6 +98,13 @@ button.query:not(:disabled):active {
 button.query:disabled {
     opacity: 0.75;
     cursor: not-allowed;
+}
+button.query#register {
+    font-size: 40px;
+}
+button.query#logout {
+    margin-top: 20px;
+    font-size: 40px;
 }
 .queryerror {
     width: 75%;

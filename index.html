@@ -7,7 +7,7 @@
 <body>
 	<h1 id="pagetitleheader">My Clicker</h1>
 	<p id="serverstatus" data-status="NaN">NaN</p>
-	<button class="generic" id="account">create an account!</button>
+	<button class="generic" id="createaccount">create an account!</button>
 	<div class="query" id="createaccount" hidden>
 		<label for="username" class="query">Username:</label>
 		<p class="queryerror" id="usernameerror" hidden>Username must not be empty!</p>
@@ -20,11 +20,25 @@
 		<p class="queryerror" id="registererror" hidden></p>
 		<button class="query" id="register">Create</button>
 	</div>
+	<button class="generic" id="inaccount">log into your account!</button>
+	<div class="query" id="inaccount" hidden>
+		<label for="username" class="query">Username:</label>
+		<p class="queryerror" id="usernameerror" hidden>Username must not be empty!</p>
+		<input type="text" id="username" class="query">
+
+		<label for="password" class="query">Password:</label>
+		<p class="queryerror" id="passworderror" hidden>Password must not be empty!</p>
+		<input type="text" id="password" class="query">
+
+		<p class="queryerror" id="registererror" hidden></p>
+		<button class="query" id="register">Log in</button>
+	</div>
 	<div class="board" id="account" hidden>
 		<h1 class="board" id="username">Username</h1>
 		<button class="clicker" id="local">click</button>
 		<br>
 		<p class="counter" id="local">clicks: </p>
+		<button class="query" id="logout">Log out</button>
 	</div>
 	<div class="container">
 		<button class="clicker" id="global">click</button>
@@ -35,44 +49,67 @@
 
 	<script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
 	<script>
-		const socket = io('https://commurygithubiobackend.onrender.com');
+		const isproduction = window.location.hostname === 'commury.github.io';
+		const SOCKET_URL = !isproduction
+			? 'http://localhost:3000'
+			: 'https://commurygithubiobackend.onrender.com';
+		const socket = io(SOCKET_URL);
 
 		let button = document.querySelector("button.clicker#global");
 		let counter = document.querySelector("p.counter#global");
+		let buttonlocal = document.querySelector("div.board#account").querySelector("button.clicker#local");
+		let counterlocal = document.querySelector("div.board#account").querySelector("p.counter#local");
 
-		let accountbutton = document.querySelector("button#account");
+		let createaccountbutton = document.querySelector("button#createaccount");
 		let accountquery = document.querySelector("div.query#createaccount");
-		let usernameinput = document.getElementById("username");
-		let passwordinput = document.getElementById("password");
-		let registerbutton = document.getElementById("register");
+		let createusernameinput = accountquery.querySelector("#username");
+		let createpasswordinput = accountquery.querySelector("#password");
+		let createregisterbutton = accountquery.querySelector("#register");
+
+		let inaccountbutton = document.querySelector("button#inaccount");
+		let inaccountquery = document.querySelector("div.query#inaccount");
+		let inusernameinput = inaccountquery.querySelector("#username");
+		let inpasswordinput = inaccountquery.querySelector("#password");
+		let inregisterbutton = inaccountquery.querySelector("#register");
 
 		let statusserver = document.getElementById("serverstatus");
 		socket.on('connect', () => {
 			statusserver.textContent = "online";
-			statusserver.dataset.status = "online"
+			statusserver.dataset.status = "online";
 			button.disabled = false;
-			registerbutton.disabled = false;
+			createregisterbutton.disabled = false;
+			inregisterbutton.disabled = false;
 		});
 		socket.on('disconnect', () => {
 			statusserver.textContent = "offline, reconnecting...";
-			statusserver.dataset.status = "offline"
+			statusserver.dataset.status = "offline";
 			button.disabled = true;
-			registerbutton.disabled = true;
+			createregisterbutton.disabled = true;
+			inregisterbutton.disabled = true;
 		});
 		socket.on('connect_error', () => {
 			statusserver.textContent = "offline";
-			statusserver.dataset.status = "offline"
+			statusserver.dataset.status = "offline";
 			button.disabled = true;
-			registerbutton.disabled = true;
+			createregisterbutton.disabled = true;
+			inregisterbutton.disabled = true;
 		});
 		
 		socket.on('servercount', (ncount) => {
 			counter.textContent = "clicks: " + ncount;
 		});
+		socket.on('usercount', (ncount) => {
+			counterlocal.textContent = "clicks: " + ncount;
+		});
 		button.addEventListener('mousedown', () => {
 			if (!button.disabled) {
 		        socket.emit('click');
 		    }
+		});
+		buttonlocal.addEventListener('mousedown', () => {
+			if (!buttonlocal.disabled) {
+				socket.emit('localclick', state);
+			}
 		});
 	</script>
 	<script>
@@ -86,46 +123,98 @@
 			state.session = session;
 
 			accountquery.hidden = true;
-			accountbutton.textContent = state.username;
+			createaccountbutton.textContent = state.username;
 			accountquery = document.querySelector("div.board#account");
 
 			accountquery.querySelector("h1.board#username").textContent = state.username;
 			socket.emit('accountclicks', state);
+
+			inaccountbutton.hidden = true;
 		}
-		accountbutton.addEventListener('mousedown', () => {
+		function accountreset() {
+			state.username = null;
+			state.session = null;
+
+			accountquery.hidden = true;
+			createaccountbutton.textContent = 'create an account!';
+			accountquery.querySelector("h1.board#username").textContent = "Username";
+			accountquery = document.querySelector("div.query#createaccount");
+
+			inaccountbutton.hidden = false;
+			inaccountquery.hidden = false;
+		}
+		createaccountbutton.addEventListener('mousedown', () => {
 			accountquery.hidden = !accountquery.hidden;
 		});
-		registerbutton.addEventListener('mousedown', async () => {
+		inaccountbutton.addEventListener('mousedown', () => {
+			inaccountquery.hidden = !inaccountquery.hidden;
+		});
+		createregisterbutton.addEventListener('mousedown', async () => {
 			let allowed = true;
 			accountquery.querySelector("#usernameerror").hidden = true;
 			accountquery.querySelector("#passworderror").hidden = true;
 			accountquery.querySelector("#registererror").hidden = true;
-			if (!usernameinput.value.trim()) {
+			if (!createusernameinput.value.trim()) {
 				accountquery.querySelector("#usernameerror").hidden = false;
 				allowed = false;
 			}
-			if (!passwordinput.value.trim()) {
+			if (!createpasswordinput.value.trim()) {
 				accountquery.querySelector("#passworderror").hidden = false;
 				allowed = false;
 			}
 			if (!allowed) {
 				return;
 			}
-			registerbutton.disabled = true;
+			createregisterbutton.disabled = true;
 			socket.emit('createaccount', {
-				username: usernameinput.value,
-				password: passwordinput.value
+				username: createusernameinput.value,
+				password: createpasswordinput.value
 			});
 			socket.on('accountcreated', (response) => {
 				if (response.success) {
-					registerbutton.disabled = false;
-					accountset(usernameinput.value, response.session);
+					createregisterbutton.disabled = false;
+					accountset(createusernameinput.value, response.session);
 				} else {
 					accountquery.querySelector("#registererror").hidden = false;
 					accountquery.querySelector("#registererror").textContent = response.message;
-					registerbutton.disabled = false;
+					createregisterbutton.disabled = false;
 				}
 			})
+		});
+		inregisterbutton.addEventListener('mousedown', async () => {
+			let allowed = true;
+			inaccountquery.querySelector("#usernameerror").hidden = true;
+			inaccountquery.querySelector("#passworderror").hidden = true;
+			inaccountquery.querySelector("#registererror").hidden = true;
+			if (!inusernameinput.value.trim()) {
+				inaccountquery.querySelector("#usernameerror").hidden = false;
+				allowed = false;
+			}
+			if (!inpasswordinput.value.trim()) {
+				inaccountquery.querySelector("#passworderror").hidden = false;
+				allowed = false;
+			}
+			if (!allowed) {
+				return;
+			}
+			inregisterbutton.disabled = true;
+			socket.emit('inaccount', {
+				username: inusernameinput.value,
+				password: inpasswordinput.value
+			});
+			socket.on('accountloggedin', (response) => {
+				if (response.success) {
+					inregisterbutton.disabled = false;
+					accountset(inusernameinput.value, response.session);
+				} else {
+					inaccountquery.querySelector("#registererror").hidden = false;
+					inaccountquery.querySelector("#registererror").textContent = response.message;
+					inregisterbutton.disabled = false;
+				}
+			})
+		});
+		document.querySelector("div.board#account").querySelector("button.query#logout").addEventListener('mousedown', () => {
+			accountreset();
 		});
 	</script>
 </body>
