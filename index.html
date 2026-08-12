@@ -130,6 +130,7 @@
 			socket.emit('accountclicks', state);
 
 			inaccountbutton.hidden = true;
+			inaccountquery.hidden = true;
 		}
 		function accountreset() {
 			state.username = null;
@@ -141,7 +142,6 @@
 			accountquery = document.querySelector("div.query#createaccount");
 
 			inaccountbutton.hidden = false;
-			inaccountquery.hidden = false;
 		}
 		createaccountbutton.addEventListener('mousedown', () => {
 			accountquery.hidden = !accountquery.hidden;
