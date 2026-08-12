@@ -8,7 +8,7 @@
 </head>
 <body>
 	<h1 id="pagetitleheader">My Clicker</h1>
-	<p id="serverstatus" data-status="NaN">NaN</p>
+	<p id="serverstatus" data-status="NaN">connecting...</p>
 	<button class="generic" id="createaccount">create an account!</button>
 	<div class="query" id="createaccount" hidden>
 		<label for="username" class="query">Username:</label>
@@ -42,6 +42,9 @@
 		<p class="counter" id="local">clicks: </p>
 		<button class="query" id="logout">Log out</button>
 	</div>
+	<div class="leaderboard">
+		<h1 class="leaderboard">Leaderboard</h1>
+	</div>
 	<div class="container">
 		<button class="clicker" id="global">click</button>
 		<br>
@@ -74,6 +77,8 @@
 		let inpasswordinput = inaccountquery.querySelector("#password");
 		let inregisterbutton = inaccountquery.querySelector("#register");
 
+		let leaderboard = document.querySelector('div.leaderboard');
+
 		let statusserver = document.getElementById("serverstatus");
 		socket.on('connect', () => {
 			statusserver.textContent = "online";
@@ -95,6 +100,17 @@
 			button.disabled = true;
 			createregisterbutton.disabled = true;
 			inregisterbutton.disabled = true;
+		});
+
+		socket.on('leaderboard', (response) => {
+			leaderboard.querySelectorAll('.leaderboarduser').forEach(el => el.remove());
+			leaderboard.innerHTML += response.map((user, index) => `
+				<div class="leaderboarduser">
+					<p class="leaderboard" id="id">#${index + 1} </p>
+					<p class="leaderboard" id="name">${user.username}: </p>
+					<p class="leaderboard" id="clicks">${user.clicks} clicks</p>
+				</div>
+			`).join('');
 		});
 		
 		socket.on('servercount', (ncount) => {

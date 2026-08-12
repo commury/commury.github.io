@@ -53,8 +53,9 @@ button.generic:disabled {
     opacity: 0.75;
     cursor: not-allowed;
 }
+
 div.query {
-    width: 100%;
+    width: 90%;
     max-width: 400px;
     height: 400px;
     margin: 0 auto;
@@ -116,10 +117,11 @@ button.query#logout {
 
     color: #ff0000;
 }
+
 div.board {
-    width: 100%;
+    width: 90%;
     max-width: 600px;
-    height: 600px;
+    height: 400px;
     margin: 0 auto;
 
     margin-top: 20px;
@@ -127,6 +129,11 @@ div.board {
 
     background-color: #ffffffc0;
 }
+h1.board#username {
+    text-align: center;
+    font-size: 40px;
+}
+
 button.clicker {
     border: 5px solid black;
 
@@ -153,6 +160,7 @@ button.clicker#local {
     background-color: #c0c0c0;
     font-size: 24px;
 }
+
 p.counter {
     margin: 0;
     text-align: center;
@@ -165,7 +173,43 @@ p.counter#global {
 p.counter#local {
     font-size: 25px;
 }
-h1.board#username {
+
+div.leaderboard {
+    width: 90%;
+    max-width: 400px;
+    height: auto;
+    margin: 0 auto;
+    overflow: hidden;
+
+    margin-top: 20px;
+
+    background-color: #ffffff80;
+}
+h1.leaderboard {
     text-align: center;
-    font-size: 40px;
+    margin-bottom: 0;
+
+    background-color: #ffffffff;
+}
+div.leaderboarduser {
+    display: flex;
+    align-items: baseline;
+
+    margin: 10px 0px;
+
+    background-color: #ffffff80;
+}
+p.leaderboard#id {
+    color: #ff0000ff;
+    font-size: 25px;
+
+    white-space: pre;
+    margin: 0;
+}
+p.leaderboard#name {
+    color: #000000ff;
+    font-size: 20px;
+
+    white-space: pre;
+    margin: 0;
 }
