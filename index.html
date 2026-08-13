@@ -157,6 +157,7 @@
 			accountquery.hidden = true;
 			createaccountbutton.textContent = 'create an account!';
 			accountquery.querySelector("h1.board#username").textContent = "Username";
+			accountquery.querySelector("p.counter#local").textContent = "clicks: "
 			accountquery = document.querySelector("div.query#createaccount");
 
 			inaccountbutton.hidden = false;
@@ -188,17 +189,17 @@
 				username: createusernameinput.value,
 				password: createpasswordinput.value
 			});
-			socket.on('accountcreated', (response) => {
-				if (response.success) {
-					createregisterbutton.disabled = false;
-					accountset(createusernameinput.value, response.session);
-				} else {
-					accountquery.querySelector("#registererror").hidden = false;
-					accountquery.querySelector("#registererror").textContent = response.message;
-					createregisterbutton.disabled = false;
-				}
-			})
 		});
+		socket.on('accountcreated', (response) => {
+			if (response.success) {
+				createregisterbutton.disabled = false;
+				accountset(createusernameinput.value, response.session);
+			} else {
+				accountquery.querySelector("#registererror").hidden = false;
+				accountquery.querySelector("#registererror").textContent = response.message;
+				createregisterbutton.disabled = false;
+			}
+		})
 		inregisterbutton.addEventListener('mousedown', async () => {
 			let allowed = true;
 			inaccountquery.querySelector("#usernameerror").hidden = true;
@@ -220,17 +221,17 @@
 				username: inusernameinput.value,
 				password: inpasswordinput.value
 			});
-			socket.on('accountloggedin', (response) => {
-				if (response.success) {
-					inregisterbutton.disabled = false;
-					accountset(inusernameinput.value, response.session);
-				} else {
-					inaccountquery.querySelector("#registererror").hidden = false;
-					inaccountquery.querySelector("#registererror").textContent = response.message;
-					inregisterbutton.disabled = false;
-				}
-			})
 		});
+		socket.on('accountloggedin', (response) => {
+			if (response.success) {
+				inregisterbutton.disabled = false;
+				accountset(inusernameinput.value, response.session);
+			} else {
+				inaccountquery.querySelector("#registererror").hidden = false;
+				inaccountquery.querySelector("#registererror").textContent = response.message;
+				inregisterbutton.disabled = false;
+			}
+		})
 		document.querySelector("div.board#account").querySelector("button.query#logout").addEventListener('mousedown', () => {
 			socket.emit('outaccount', state);
 			accountreset();
