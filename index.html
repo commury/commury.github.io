@@ -232,6 +232,7 @@
 			})
 		});
 		document.querySelector("div.board#account").querySelector("button.query#logout").addEventListener('mousedown', () => {
+			socket.emit('outaccount', state);
 			accountreset();
 		});
 	</script>
