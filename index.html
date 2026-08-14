@@ -104,13 +104,20 @@
 
 		socket.on('leaderboard', (response) => {
 			leaderboard.querySelectorAll('.leaderboarduser').forEach(el => el.remove());
-			leaderboard.innerHTML += response.map((user, index) => `
-				<div class="leaderboarduser">
-					<p class="leaderboard" id="id">#${index + 1} </p>
-					<p class="leaderboard" id="name">${user.username}: </p>
-					<p class="leaderboard" id="clicks">${user.clicks} clicks</p>
-				</div>
-			`).join('');
+
+			let rank = 1;
+			leaderboard.innerHTML += response.map((user, index, arr) => {
+				if (index > 0 && user.clicks < arr[index - 1].clicks) {
+					rank++;
+				}
+				return `
+					<div class="leaderboarduser">
+						<p class="leaderboard" id="id">#${rank} </p>
+						<p class="leaderboard" id="name">${user.username}: </p>
+						<p class="leaderboard" id="clicks">${user.clicks} clicks</p>
+					</div>
+				`;
+			}).join('');
 		});
 		
 		socket.on('servercount', (ncount) => {
