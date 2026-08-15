@@ -78,14 +78,18 @@
 		let inregisterbutton = inaccountquery.querySelector("#register");
 
 		let leaderboard = document.querySelector('div.leaderboard');
-
 		let statusserver = document.getElementById("serverstatus");
+
+		let state = {username: null, session: null};
+
 		socket.on('connect', () => {
 			statusserver.textContent = "online";
 			statusserver.dataset.status = "online";
 			button.disabled = false;
 			createregisterbutton.disabled = false;
 			inregisterbutton.disabled = false;
+
+			if (state.username && state.session) {socket.emit('accountclicks', state);}
 		});
 		socket.on('disconnect', () => {
 			statusserver.textContent = "offline, reconnecting...";
@@ -107,9 +111,7 @@
 
 			let rank = 1;
 			leaderboard.innerHTML += response.map((user, index, arr) => {
-				if (index > 0 && user.clicks < arr[index - 1].clicks) {
-					rank++;
-				}
+				if (index > 0 && user.clicks < arr[index - 1].clicks) {rank++;}
 				return `
 					<div class="leaderboarduser">
 						<p class="leaderboard" id="id">#${rank} </p>
@@ -120,29 +122,12 @@
 			}).join('');
 		});
 		
-		socket.on('servercount', (ncount) => {
-			counter.textContent = "clicks: " + ncount;
-		});
-		socket.on('usercount', (ncount) => {
-			counterlocal.textContent = "clicks: " + ncount;
-		});
-		button.addEventListener('mousedown', () => {
-			if (!button.disabled) {
-		        socket.emit('click');
-		    }
-		});
-		buttonlocal.addEventListener('mousedown', () => {
-			if (!buttonlocal.disabled) {
-				socket.emit('localclick', state);
-			}
-		});
+		socket.on('servercount', (ncount) => {counter.textContent = "clicks: " + ncount;});
+		socket.on('usercount', (ncount) => {counterlocal.textContent = "clicks: " + ncount;});
+		button.addEventListener('mousedown', () => {if (!button.disabled) {socket.emit('click');}});
+		buttonlocal.addEventListener('mousedown', () => {if (!buttonlocal.disabled) {socket.emit('localclick', state);}});
 	</script>
 	<script>
-		let state = {
-			username: null,
-			session: null
-		};
-
 		function accountset(username, session) {
 			state.username = username;
 			state.session = session;
@@ -169,12 +154,8 @@
 
 			inaccountbutton.hidden = false;
 		}
-		createaccountbutton.addEventListener('mousedown', () => {
-			accountquery.hidden = !accountquery.hidden;
-		});
-		inaccountbutton.addEventListener('mousedown', () => {
-			inaccountquery.hidden = !inaccountquery.hidden;
-		});
+		createaccountbutton.addEventListener('mousedown', () => {accountquery.hidden = !accountquery.hidden;});
+		inaccountbutton.addEventListener('mousedown', () => {inaccountquery.hidden = !inaccountquery.hidden;});
 		createregisterbutton.addEventListener('mousedown', async () => {
 			let allowed = true;
 			accountquery.querySelector("#usernameerror").hidden = true;
@@ -188,9 +169,7 @@
 				accountquery.querySelector("#passworderror").hidden = false;
 				allowed = false;
 			}
-			if (!allowed) {
-				return;
-			}
+			if (!allowed) {return;}
 			createregisterbutton.disabled = true;
 			socket.emit('createaccount', {
 				username: createusernameinput.value,
@@ -220,9 +199,7 @@
 				inaccountquery.querySelector("#passworderror").hidden = false;
 				allowed = false;
 			}
-			if (!allowed) {
-				return;
-			}
+			if (!allowed) {return;}
 			inregisterbutton.disabled = true;
 			socket.emit('inaccount', {
 				username: inusernameinput.value,
