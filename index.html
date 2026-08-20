@@ -7,7 +7,7 @@
 	<link rel="stylesheet" href="style.css">
 </head>
 <body>
-	<h1 id="pagetitleheader">My Clicker</h1>
+	<h1 id="pagetitleheader">clicker battles</h1>
 	<p id="serverstatus" data-status="NaN">connecting...</p>
 	<button class="generic" id="createaccount">create an account!</button>
 	<div class="query" id="createaccount" hidden>
@@ -36,34 +36,48 @@
 		<button class="query" id="register">Log in</button>
 	</div>
 	<div class="board" id="account" hidden>
-		<h1 class="board" id="username">Username</h1>
-		<button class="clicker" id="local">click</button>
+		<h1 class="boardtitle" id="username">Username</h1>
+		<img class="profile" alt="profile" width="100" height="100" style="display: block; margin: 0 auto; object-fit: cover;">
+		<button class="generic" id="requestmatch">Request match</button>
 		<br>
-		<p class="counter" id="local">clicks: </p>
+		<p class="counter" id="local">wins: </p>
 		<button class="query" id="logout">Log out</button>
 	</div>
 	<div class="leaderboard">
-		<h1 class="leaderboard">Leaderboard</h1>
+		<h1 class="boardtitle">Leaderboard</h1>
 	</div>
-	<div class="container">
-		<button class="clicker" id="global">click</button>
-		<br>
-		<p class="counter" id="global">clicks: </p>
-		<p id="yippyyap">myclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclickermyclicker</p>
+	<div class="board" id="matchrequests">
+		<h1 class="boardtitle">Matches</h1>
+	</div>
+	<div class="match" style="position: relative;" hidden>
+		<div class="countdown" style="position: absolute; inset: 0; z-index: 10; font-size: 4rem; display: flex; align-items: center; justify-content: center; font-size: 50cqh;" hidden>3</div>
+		<div class="winner" style="position: absolute; inset: 0; z-index: 10; font-size: 4rem; display: flex; align-items: center; justify-content: center; font-size: 10cqh; background-color: #ffffff55;" hidden> win!</div>
+		<div class="opponent" style="margin: 0; margin-bottom: 20px;">
+			<img class="oprofile" alt="oprofile" width="100" height="100" style="display: block; margin: 0 auto; margin-left: 0; object-fit: cover;">
+			<button class="clicker" id="opponent" style="background-color: #ff8080ff;" disabled hidden>click</button>
+			<h1 class="match" id="opponentname" style="background-color: #ff000080;">Opponent</h1>
+		</div>
+		<div class="pushbar" style="display: flex;">
+			<div class="opushbar" style="background-color: #ff000080; width: 50%; height: 100%;"></div>
+			<div class="spushbar" style="background-color: #0000ff80; width: 50%; height: 100%; margin-left: auto"></div>
+		</div>
+		<div class="self" style="margin: 0; margin-top: 20px;">
+			<img class="sprofile" alt="sprofile" width="100" height="100" style="display: block; margin: 0 auto; margin-right: 0; object-fit: cover;">
+			<button class="clicker" id="self" style="background-color: #8080ffff;" disabled hidden>click</button>
+			<h1 class="match" id="selfname" style="background-color: #0000ff80; text-align: right;">Self</h1>
+		</div>
+		<button class="generic" id="back" style="display: block; margin: 0 auto;">Back</button>
 	</div>
 
 	<script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
 	<script>
+		const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+
 		const isproduction = window.location.hostname === 'commury.github.io';
 		const SOCKET_URL = !isproduction
 			? 'http://localhost:3000'
 			: 'https://commurygithubiobackend.onrender.com';
 		const socket = io(SOCKET_URL);
-
-		let button = document.querySelector("button.clicker#global");
-		let counter = document.querySelector("p.counter#global");
-		let buttonlocal = document.querySelector("div.board#account").querySelector("button.clicker#local");
-		let counterlocal = document.querySelector("div.board#account").querySelector("p.counter#local");
 
 		let createaccountbutton = document.querySelector("button#createaccount");
 		let accountquery = document.querySelector("div.query#createaccount");
@@ -80,28 +94,67 @@
 		let leaderboard = document.querySelector('div.leaderboard');
 		let statusserver = document.getElementById("serverstatus");
 
+		let matches = document.querySelector("div.board#matchrequests");
+		let currentmatch = document.querySelector("div.match");
+		let opimg = currentmatch.querySelector("img.oprofile");
+		let opname = currentmatch.querySelector("h1.match#opponentname");
+		let seimg = currentmatch.querySelector("img.sprofile");
+		let sename = currentmatch.querySelector("h1.match#selfname");
+		let matchcountdown = currentmatch.querySelector("div.countdown");
+		let opbutton = currentmatch.querySelector("button.clicker#opponent");
+		let sebutton = currentmatch.querySelector("button.clicker#self");
+		let oppushbar = currentmatch.querySelector("div.opushbar");
+		let sepushbar = currentmatch.querySelector("div.spushbar");
+
 		let state = {username: null, session: null};
+		let profileimage = null;
+
+		let currentmatchid;
+		let hiddenstate;
+
+		function openmatch() {
+			hiddenstate = {
+				accountquery: accountquery.hidden,
+				inaccountbutton: inaccountbutton.hidden,
+				inaccountquery: inaccountquery.hidden,
+			};
+			createaccountbutton.hidden = true;
+			accountquery.hidden = true;
+			inaccountbutton.hidden = true;
+			inaccountquery.hidden = true;
+			leaderboard.hidden = true;
+			matches.hidden = true;
+
+			currentmatch.hidden = false;
+		}
+		function closematch() {
+			createaccountbutton.hidden = false;
+			accountquery.hidden = hiddenstate.accountquery;
+			inaccountbutton.hidden = hiddenstate.inaccountbutton;
+			inaccountquery.hidden = hiddenstate.inaccountquery;
+			leaderboard.hidden = false;
+			matches.hidden = false;
+
+			currentmatch.hidden = true;
+
+			currentmatch.querySelector("button.generic#back").hidden = false;
+		}
 
 		socket.on('connect', () => {
 			statusserver.textContent = "online";
 			statusserver.dataset.status = "online";
-			button.disabled = false;
 			createregisterbutton.disabled = false;
 			inregisterbutton.disabled = false;
-
-			if (state.username && state.session) {socket.emit('accountclicks', state);}
 		});
 		socket.on('disconnect', () => {
 			statusserver.textContent = "offline, reconnecting...";
 			statusserver.dataset.status = "offline";
-			button.disabled = true;
 			createregisterbutton.disabled = true;
 			inregisterbutton.disabled = true;
 		});
 		socket.on('connect_error', () => {
 			statusserver.textContent = "offline";
 			statusserver.dataset.status = "offline";
-			button.disabled = true;
 			createregisterbutton.disabled = true;
 			inregisterbutton.disabled = true;
 		});
@@ -111,36 +164,48 @@
 
 			let rank = 1;
 			leaderboard.innerHTML += response.map((user, index, arr) => {
-				if (index > 0 && user.clicks < arr[index - 1].clicks) {rank++;}
+				if (index > 0 && user.wins < arr[index - 1].wins) {rank++;}
 				return `
 					<div class="leaderboarduser">
 						<p class="leaderboard" id="id">#${rank} </p>
 						<p class="leaderboard" id="name">${user.username}: </p>
-						<p class="leaderboard" id="clicks">${user.clicks} clicks</p>
+						<p class="leaderboard" id="wins">${user.wins} wins</p>
 					</div>
 				`;
 			}).join('');
 		});
-		
-		socket.on('servercount', (ncount) => {counter.textContent = "clicks: " + ncount;});
-		socket.on('usercount', (ncount) => {counterlocal.textContent = "clicks: " + ncount;});
-		button.addEventListener('mousedown', () => {if (!button.disabled) {socket.emit('click');}});
-		buttonlocal.addEventListener('mousedown', () => {if (!buttonlocal.disabled) {socket.emit('localclick', state);}});
+		socket.on('matchrequests', (response) => {
+			matches.querySelectorAll('#matchrequest').forEach(el => el.remove());
+			matches.innerHTML += response.map(match => {
+				return `
+					<button class="generic" id="matchrequest" data-matchid="${match.matchid}" style="width: 100%; margin-bottom: 10px;" ${match.inmatch ? "disabled" : ""}>
+						Click battle match - ${match.p1 ? match.p1.username : "Nobody"} vs ${match.p2 ? match.p2.username : "Nobody"}
+					</button>
+				`
+				;}).join('');
+		});
+		matches.addEventListener('mousedown', (event) => {
+			const button = event.target.closest('#matchrequest');
+			if (button) {socket.emit('matchjoin', state, button.dataset.matchid);}
+			openmatch();
+		})
 	</script>
 	<script>
-		function accountset(username, session) {
+		function accountset(username, session, imageurl) {
 			state.username = username;
 			state.session = session;
+			profileimage = imageurl;
 
 			accountquery.hidden = true;
 			createaccountbutton.textContent = state.username;
 			accountquery = document.querySelector("div.board#account");
 
-			accountquery.querySelector("h1.board#username").textContent = state.username;
-			socket.emit('accountclicks', state);
+			accountquery.querySelector("h1.boardtitle#username").textContent = state.username;
 
 			inaccountbutton.hidden = true;
 			inaccountquery.hidden = true;
+
+			document.querySelector("div.board#account").querySelector("img.profile").src = profileimage;
 		}
 		function accountreset() {
 			state.username = null;
@@ -148,8 +213,8 @@
 
 			accountquery.hidden = true;
 			createaccountbutton.textContent = 'create an account!';
-			accountquery.querySelector("h1.board#username").textContent = "Username";
-			accountquery.querySelector("p.counter#local").textContent = "clicks: "
+			accountquery.querySelector("h1.boardtitle#username").textContent = "Username";
+			accountquery.querySelector("p.counter#local").textContent = "wins: "
 			accountquery = document.querySelector("div.query#createaccount");
 
 			inaccountbutton.hidden = false;
@@ -171,21 +236,17 @@
 			}
 			if (!allowed) {return;}
 			createregisterbutton.disabled = true;
-			socket.emit('createaccount', {
+			socket.timeout(5000).emit('createaccount', {
 				username: createusernameinput.value,
 				password: createpasswordinput.value
+			}, (error) => {
+				if (error) {
+					accountquery.querySelector("#registererror").hidden = false;
+					accountquery.querySelector("#registererror").textContent = 'timeout';
+					createregisterbutton.disabled = false;
+				}
 			});
 		});
-		socket.on('accountcreated', (response) => {
-			if (response.success) {
-				createregisterbutton.disabled = false;
-				accountset(createusernameinput.value, response.session);
-			} else {
-				accountquery.querySelector("#registererror").hidden = false;
-				accountquery.querySelector("#registererror").textContent = response.message;
-				createregisterbutton.disabled = false;
-			}
-		})
 		inregisterbutton.addEventListener('mousedown', async () => {
 			let allowed = true;
 			inaccountquery.querySelector("#usernameerror").hidden = true;
@@ -201,24 +262,100 @@
 			}
 			if (!allowed) {return;}
 			inregisterbutton.disabled = true;
-			socket.emit('inaccount', {
+			socket.timeout(5000).emit('inaccount', {
 				username: inusernameinput.value,
 				password: inpasswordinput.value
+			}, (error) => {
+				if (error) {
+					inaccountquery.querySelector("#registererror").hidden = false;
+					inaccountquery.querySelector("#registererror").textContent = "timeout";
+					inregisterbutton.disabled = false;
+				}
 			});
 		});
 		socket.on('accountloggedin', (response) => {
 			if (response.success) {
-				inregisterbutton.disabled = false;
-				accountset(inusernameinput.value, response.session);
+				if (response.mode == "in") {inregisterbutton.disabled = false;} else if (response.mode == "create") {createregisterbutton.disabled = false;}
+				accountset(response.username, response.session, response.imageurl);
 			} else {
-				inaccountquery.querySelector("#registererror").hidden = false;
-				inaccountquery.querySelector("#registererror").textContent = response.message;
-				inregisterbutton.disabled = false;
+				if (response.mode == "in") {
+					inaccountquery.querySelector("#registererror").hidden = false;
+					inaccountquery.querySelector("#registererror").textContent = response.message;
+					inregisterbutton.disabled = false;
+				} else if (response.mode == "create") {
+					accountquery.querySelector("#registererror").hidden = false;
+					accountquery.querySelector("#registererror").textContent = response.message;
+					createregisterbutton.disabled = false;
+				}
 			}
 		})
 		document.querySelector("div.board#account").querySelector("button.query#logout").addEventListener('mousedown', () => {
-			socket.emit('outaccount', state);
 			accountreset();
+		});
+
+		let ownbutton;
+		let localplaying = false;
+
+		function matchclickbutton() {
+			socket.emit('matchclick', currentmatchid);
+		}
+
+		function matchupdate(p1, p2, diff, p) {
+			if (p1) {opimg.src = p1.imageurl; opname.textContent = p1.username;}
+			if (p2) {seimg.src = p2.imageurl; sename.textContent = p2.username;}
+			if (p == "p1") {opbutton.hidden = false; ownbutton = opbutton;} else if (p == "p2") {sebutton.hidden = false; ownbutton = sebutton;}
+			oppushbar.style.width = `${diff}%`;
+			sepushbar.style.width = `${100 - diff}%`
+		}
+		function countdown() {
+			const timer = setInterval(() => {
+				matchcountdown.textContent--;
+				if (matchcountdown.textContent <= 0) {
+					clearInterval(timer);
+					matchcountdown.hidden = true;
+					ownbutton.disabled = false;
+					ownbutton.addEventListener('mousedown', matchclickbutton);
+
+					localplaying = true;
+				}
+			}, 1000);
+		}
+		socket.on("matchupdate", ({matchid, p1, p2, diff, inmatch}, p) => {
+			currentmatchid = matchid;
+			matchupdate(p1, p2, diff, p);
+			if (inmatch && !localplaying) {
+				currentmatch.querySelector("button.generic#back").hidden = true;
+				matchcountdown.hidden = false;
+				countdown();
+			}
+		});
+		socket.on("matchend", async (message) => {
+			ownbutton.removeEventListener('mousedown', matchclickbutton);
+
+			currentmatch.querySelector("div.winner").hidden = false;
+			currentmatch.querySelector("div.winner").textContent = message;
+			ownbutton.disabled = true;
+
+			await sleep(3000);
+
+			ownbutton.hidden = true;
+			currentmatch.querySelector("div.winner").hidden = true;
+			opname.textContent = "Opponent";
+			sename.textContent = "Self";
+			opimg.src = "";
+			seimg.src = "";
+
+			closematch();
+			localplaying = false;
+			matchcountdown.textContent = 3;
+		});
+		document.querySelector("div.board#account").querySelector("button#requestmatch").addEventListener('mousedown', () => {
+			socket.emit('requestmatch', state);
+			openmatch();
+		});
+		currentmatch.querySelector("button.generic#back").addEventListener("mousedown", () => {
+			socket.emit('abortmatch', state, currentmatchid);
+			closematch();
 		});
 	</script>
 </body>

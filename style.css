@@ -1,5 +1,12 @@
+[hidden] {
+    display: none !important;
+}
+
 body {
     background: linear-gradient(135deg, #d6eaff, #3070b4);
+
+    min-height: 100vh;
+    background-attachment: fixed;
 }
 
 #pagetitleheader {
@@ -52,6 +59,10 @@ button.generic:not(:disabled):active {
 button.generic:disabled {
     opacity: 0.75;
     cursor: not-allowed;
+}
+button.generic#requestmatch {
+    display: block;
+    margin: 5px auto;
 }
 
 div.query {
@@ -124,13 +135,23 @@ div.board {
     height: 400px;
     margin: 0 auto;
 
+    overflow: hidden;
+
     margin-top: 20px;
-    padding-top: 10px;
 
     background-color: #ffffffc0;
 }
-h1.board#username {
+div.board#matchrequests {
+    height: auto;
+}
+h1.boardtitle {
     text-align: center;
+    margin: 25px 0px;
+
+    background-color: #ffffffff;
+}
+
+h1.boardtitle#username {
     font-size: 40px;
 }
 
@@ -144,6 +165,9 @@ button.clicker {
     padding-right: 50px;
 
     cursor: pointer;
+
+    background-color: #8b8b8b;
+    font-size: 32px;
 }
 button.clicker:not(:disabled):active {
     transform: scale(0.9);
@@ -151,14 +175,6 @@ button.clicker:not(:disabled):active {
 button.clicker:disabled {
     opacity: 0.5;
     cursor: not-allowed;
-}
-button.clicker#global {
-    background-color: #8b8b8b;
-    font-size: 32px;
-}
-button.clicker#local {
-    background-color: #c0c0c0;
-    font-size: 24px;
 }
 
 p.counter {
@@ -185,12 +201,6 @@ div.leaderboard {
 
     background-color: #ffffff80;
 }
-h1.leaderboard {
-    text-align: center;
-    margin-bottom: 0;
-
-    background-color: #ffffffff;
-}
 div.leaderboarduser {
     display: flex;
     align-items: baseline;
@@ -212,4 +222,20 @@ p.leaderboard#name {
 
     white-space: pre;
     margin: 0;
+}
+
+div.match {
+    margin: 20px auto;
+    width: 90%;
+
+    background-color: #ffffff80;
+}
+
+div.pushbar {
+    width: 90%;
+    height: 40px;
+
+    margin: 0 auto;
+
+    background-color: #808080ff;
 }
