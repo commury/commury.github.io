@@ -110,35 +110,6 @@
 		let profileimage = null;
 
 		let currentmatchid;
-		let hiddenstate;
-
-		function openmatch() {
-			hiddenstate = {
-				accountquery: accountquery.hidden,
-				inaccountbutton: inaccountbutton.hidden,
-				inaccountquery: inaccountquery.hidden,
-			};
-			createaccountbutton.hidden = true;
-			accountquery.hidden = true;
-			inaccountbutton.hidden = true;
-			inaccountquery.hidden = true;
-			leaderboard.hidden = true;
-			matches.hidden = true;
-
-			currentmatch.hidden = false;
-		}
-		function closematch() {
-			createaccountbutton.hidden = false;
-			accountquery.hidden = hiddenstate.accountquery;
-			inaccountbutton.hidden = hiddenstate.inaccountbutton;
-			inaccountquery.hidden = hiddenstate.inaccountquery;
-			leaderboard.hidden = false;
-			matches.hidden = false;
-
-			currentmatch.hidden = true;
-
-			currentmatch.querySelector("button.generic#back").hidden = false;
-		}
 
 		socket.on('connect', () => {
 			statusserver.textContent = "online";
@@ -300,6 +271,43 @@
 		let ownbutton;
 		let localplaying = false;
 
+		let hiddenstate;
+
+		function openmatch() {
+			hiddenstate = {
+				accountquery: accountquery.hidden,
+				inaccountbutton: inaccountbutton.hidden,
+				inaccountquery: inaccountquery.hidden,
+			};
+			createaccountbutton.hidden = true;
+			accountquery.hidden = true;
+			inaccountbutton.hidden = true;
+			inaccountquery.hidden = true;
+			leaderboard.hidden = true;
+			matches.hidden = true;
+
+			currentmatch.hidden = false;
+		}
+		function closematch() {
+			createaccountbutton.hidden = false;
+			accountquery.hidden = hiddenstate.accountquery;
+			inaccountbutton.hidden = hiddenstate.inaccountbutton;
+			inaccountquery.hidden = hiddenstate.inaccountquery;
+			leaderboard.hidden = false;
+			matches.hidden = false;
+
+			currentmatch.hidden = true;
+
+			currentmatch.querySelector("button.generic#back").hidden = false;
+
+			ownbutton.hidden = true;
+			currentmatch.querySelector("div.winner").hidden = true;
+			opname.textContent = "Opponent";
+			sename.textContent = "Self";
+			opimg.src = "";
+			seimg.src = "";
+		}
+
 		function matchclickbutton() {
 			socket.emit('matchclick', currentmatchid);
 		}
@@ -341,13 +349,6 @@
 			ownbutton.disabled = true;
 
 			await sleep(3000);
-
-			ownbutton.hidden = true;
-			currentmatch.querySelector("div.winner").hidden = true;
-			opname.textContent = "Opponent";
-			sename.textContent = "Self";
-			opimg.src = "";
-			seimg.src = "";
 
 			closematch();
 			localplaying = false;
