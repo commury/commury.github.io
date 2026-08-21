@@ -160,6 +160,10 @@
 		});
 
 		socket.on('leaderboard', (response) => {
+			if (state.username && state.session) {
+				let me = response.find(u => u.username == state.username);
+				if (me) {document.querySelector("div.board#account").querySelector("p.counter#local").textContent = "wins: " + me.wins;}
+			}
 			leaderboard.querySelectorAll('.leaderboarduser').forEach(el => el.remove());
 
 			let rank = 1;
